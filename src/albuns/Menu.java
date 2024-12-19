@@ -4,22 +4,23 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import albuns.controller.AlbumController;
 import albuns.model.Album01;
 import albuns.model.Album02;
 import albuns.model.Album03;
+import albuns.model.Albuns;
 
 public class Menu {
 
 	public static void main(String[] args) {
-		
-		Album01 ab1 = new Album01(1,2024,"Hop",200f);
-		ab1.exibirDetalhes();
-		
-		Album02 ab2 = new Album02(2,2019,"Harry'House",300f);
-		ab2.exibirDetalhes();
-		
-		Album03 ab3 = new Album03(3,2023,"Venow",270f);
-		ab3.exibirDetalhes();
+
+		AlbumController albuns = new AlbumController();
+
+		Album02 ab2 = new Album02(2, 2019, "Harry'House", 300f);
+		albuns.cadastrar(ab2);
+
+		Album03 ab3 = new Album03(3, 2023, "Venow", 270f);
+		albuns.cadastrar(ab3); 
 
 		Scanner leia = new Scanner(System.in);
 
@@ -46,15 +47,14 @@ public class Menu {
 			System.out.println("Entre com a opção desejada:                          ");
 			System.out.println("                                                     ");
 
-			
 			try {
 				opcao = leia.nextInt();
-			
-			}catch(InputMismatchException e) {
+
+			} catch (InputMismatchException e) {
 				System.out.println("Digite apenas número.");
 				leia.nextLine();
-				opcao=0;
-				
+				opcao = 0;
+
 			}
 
 			if (opcao == 6) {
@@ -66,33 +66,77 @@ public class Menu {
 			switch (opcao) {
 			case 1:
 				System.out.println("Cadastrar Álbum no sistema:\n\n");
-				
+
 				System.out.print("Código: ");
-                codigo = leia.nextInt();
-                leia.nextLine();
-                System.out.print("Título: ");
-                titulo = leia.nextLine();
-                System.out.print("Valor: ");
-                valor = leia.nextFloat();
-                System.out.print("Lançamento: ");
-                lancamento = leia.nextInt();
-               
+				codigo = leia.nextInt();
+				System.out.print("Título: ");
+				leia.skip("\\R?");
+				titulo = leia.nextLine();
+				System.out.print("Valor: ");
+				valor = leia.nextFloat();
+				System.out.print("Lançamento: ");
+				lancamento = leia.nextInt();
+
+				Album01 album = new Album01(codigo, lancamento, titulo, valor); // Usando Album01 como exemplo
+				albuns.cadastrar(album);
+
 				keyPress();
 				break;
 			case 2:
 				System.out.println("Listagem de Álbuns:\n\n");
+				albuns.listaAlbuns();
 				keyPress();
 				break;
 			case 3:
 				System.out.println("Procurar Álbum pelo código - número:\n\n");
+				
+				System.out.print("Digite o código do álbum: ");
+			    codigo = leia.nextInt();
+			    Albuns albumEncontrado = albuns.procurarViaCodigo(codigo);
+
+			    if (albumEncontrado != null) {
+			        albumEncontrado.exibirDetalhes();
+			    } else {
+			        System.out.println("Álbum não encontrado com o código " + codigo);
+			    }
+
+				
 				keyPress();
 				break;
 			case 4:
 				System.out.println("Atualizar informações de Produto:\n\n");
+				
+				System.out.print("Digite o código do álbum que deseja atualizar: ");
+			    codigo = leia.nextInt();
+			    
+			    Albuns albumParaAtualizar = albuns.procurarViaCodigo(codigo);
+			    
+			    if (albumParaAtualizar != null) {
+			        System.out.print("Novo título (atual: " + albumParaAtualizar.getTitulo() + "): ");
+			        leia.skip("\\R?");
+			        titulo = leia.nextLine();
+			        
+			        System.out.print("Novo valor (atual: " + albumParaAtualizar.getValor() + "): ");
+			        valor = leia.nextFloat();
+			        
+			        System.out.print("Novo lançamento (atual: " + albumParaAtualizar.getLancamento() + "): ");
+			        lancamento = leia.nextInt();
+			        
+			        Albuns albumAtualizado = new Album01(codigo, lancamento, titulo, valor);
+			        albuns.atualizar(albumAtualizado); 
+			    } else {
+			        System.out.println("Álbum com o código " + codigo + " não encontrado.");
+			    }
+			    
 				keyPress();
 				break;
 			case 5:
 				System.out.println("Excluir Produto do sistema \n\n");
+				
+				System.out.print("Digite o código do álbum que deseja excluir: ");
+			    codigo = leia.nextInt();
+			    albuns.excluir(codigo);
+			
 				keyPress();
 				break;
 			case 6:
@@ -100,7 +144,7 @@ public class Menu {
 				keyPress();
 				break;
 			default:
-				System.out.println( "\nOpção Inválida!\n");
+				System.out.println("\nOpção Inválida!\n");
 				keyPress();
 				break;
 			}
@@ -118,12 +162,12 @@ public class Menu {
 		System.out.println(" GITHUB: github.com/izabellygutierres                   ");
 		System.out.println("***********************************************************");
 	}
-	
+
 	public static void keyPress() {
 
 		try {
 
-			System.out.println( "\n\nPressione Enter para Continuar...");
+			System.out.println("\n\nPressione Enter para Continuar...");
 			System.in.read();
 
 		} catch (IOException e) {

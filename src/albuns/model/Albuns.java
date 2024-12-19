@@ -47,6 +47,10 @@ public abstract class Albuns {
 	public void setValor(float valor) {
 		this.valor = valor;
 	}
+	
+	public int gerarCodigo (){
+		return ++ codigo ;
+	}
 
 	public void exibirDetalhes() {
 		
